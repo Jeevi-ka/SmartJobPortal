@@ -1,0 +1,8 @@
+node_modules/
+build/
+dist/
+target/
+.env
+.idea/
+.vscode/
+backend/uploads/resumes/
