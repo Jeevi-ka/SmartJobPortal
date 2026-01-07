@@ -55,7 +55,7 @@ useEffect(() => {
     if (!recruiter || !recruiter.id) return;
 
     axios
-      .get(`http://localhost:8080/api/jobs/recruiter/${recruiter.id}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/api/jobs/recruiter/${recruiter.id}`)
       .then((res) => {
         setJobs(res.data);
         setJobsCount(res.data.length);
@@ -78,10 +78,22 @@ useEffect(() => {
 
     try {
       // ✅ Send nested recruiter object as backend expects
-      await axios.post("http://localhost:8080/api/jobs/post", {
-        ...jobForm,
-        recruiter: { id: recruiter.id },
-      });
+      // Prepare payload safely
+const payload = {
+  ...jobForm,
+  recruiter: { id: recruiter.id },
+  minimumCgpa: jobForm.minimumCgpa ? Number(jobForm.minimumCgpa) : 0,
+  minimumTenthPercentage: jobForm.minimumTenthPercentage ? Number(jobForm.minimumTenthPercentage) : 0,
+  minimumTwelfthPercentage: jobForm.minimumTwelfthPercentage ? Number(jobForm.minimumTwelfthPercentage) : 0,
+  applicationDeadline: jobForm.applicationDeadline || null,
+};
+console.log("Job payload:", payload);
+
+// Send request
+await axios.post("${process.env.REACT_APP_API_BASE_URL}/api/jobs/post", payload, {
+  headers: { "Content-Type": "application/json" },
+});
+
 
       alert("Job posted successfully!");
 
@@ -117,7 +129,7 @@ const fetchApplications = async () => {
   try {
     // 1️⃣ Get jobs of recruiter
     const jobsRes = await axios.get(
-      `http://localhost:8080/api/jobs/recruiter/${recruiter.id}`
+      `${process.env.REACT_APP_API_BASE_URL}/api/jobs/recruiter/${recruiter.id}`
     );
 
     const recruiterJobs = jobsRes.data;
@@ -126,7 +138,7 @@ const fetchApplications = async () => {
     // 2️⃣ For each job, get applications
     for (let job of recruiterJobs) {
       const appsRes = await axios.get(
-        `http://localhost:8080/api/applications/job/${job.id}`
+        `${process.env.REACT_APP_API_BASE_URL}/api/applications/job/${job.id}`
       );
 
       const appsWithJob = appsRes.data.map(app => ({
@@ -148,7 +160,7 @@ const fetchApplications = async () => {
 // ================= APPROVE =================
 const approveApplication = async (applicationId) => {
   await axios.put(
-    `http://localhost:8080/api/applications/approve/${applicationId}`
+    `${process.env.REACT_APP_API_BASE_URL}/api/applications/approve/${applicationId}`
   );
   fetchApplications();
 };
@@ -157,7 +169,7 @@ const approveApplication = async (applicationId) => {
 const rejectApplication = async (applicationId) => {
   try {
     await axios.put(
-      `http://localhost:8080/api/applications/reject/${applicationId}`
+      `${process.env.REACT_APP_API_BASE_URL}/api/applications/reject/${applicationId}`
     );
 
     // 🔥 REMOVE rejected candidate from UI immediately
@@ -174,7 +186,7 @@ const rejectApplication = async (applicationId) => {
 // ================= VIEW RESUME =================
 const viewResume = (resumeId) => {
   window.open(
-    `http://localhost:8080/api/resumes/download/${resumeId}`,
+    `${process.env.REACT_APP_API_BASE_URL}/api/resumes/download/${resumeId}`,
     "_blank"
   );
 };
@@ -252,7 +264,13 @@ const viewCandidateProfile = (candidateId) => {
                 {Object.keys(jobForm).map((field) => (
                   <input
                     key={field}
-                    type={field.includes("Deadline") ? "date" : "text"}
+                    type={
+                      field.includes("Deadline")
+                        ? "date"
+                        : ["minimumCgpa","minimumTenthPercentage","minimumTwelfthPercentage"].includes(field)
+                        ? "number"
+                        : "text"
+                    }
                     name={field}
                     value={jobForm[field]}
                     onChange={handleChange}

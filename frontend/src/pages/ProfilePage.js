@@ -21,7 +21,7 @@ useEffect(() => {
   // Only fetch if profile is empty (first load)
   if (Object.keys(profile).length === 0) {
     axios
-      .get(`http://localhost:8080/api/profile/candidate/${candidateId}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/api/profile/candidate/${candidateId}`)
       .then(res => setProfile(res.data || {}))
       .catch(err => console.error(err));
   }
@@ -41,7 +41,7 @@ useEffect(() => {
 
   const handleSave = async () => {
     try {
-      const res = await axios.post("http://localhost:8080/api/profile", {
+      const res = await axios.post("${process.env.REACT_APP_API_BASE_URL}/api/profile", {
         ...profile,
         candidateId
       });

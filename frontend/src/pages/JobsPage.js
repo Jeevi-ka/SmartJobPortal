@@ -9,7 +9,7 @@ function JobsPage({ candidateId, onApply, appliedJobs }) {
     if (!candidateId) return;
 
     axios
-      .get(`http://localhost:8080/api/jobs/candidate/${candidateId}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/api/jobs/candidate/${candidateId}`)
       .then((res) => {
         setJobs(res.data);
         setLoading(false);

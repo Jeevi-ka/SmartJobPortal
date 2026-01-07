@@ -10,7 +10,7 @@ function AppliedJobsPage() {
     if (!candidate?.id) return;
 
     axios
-      .get(`http://localhost:8080/api/applications/candidate/${candidate.id}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/api/applications/candidate/${candidate.id}`)
       .then((res) => {
         setApplications(res.data);
         setLoading(false);

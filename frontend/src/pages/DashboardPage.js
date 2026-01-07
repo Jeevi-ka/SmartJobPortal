@@ -54,7 +54,7 @@ function DashboardPage() {
     if (!candidateId) return;
 
     axios
-      .get(`http://localhost:8080/api/applications/candidate/${candidateId}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/api/applications/candidate/${candidateId}`)
       .then(res => {
         const appliedJobIds = res.data.map(application => application.job.id);
         setAppliedJobs(appliedJobIds);
@@ -81,7 +81,7 @@ function DashboardPage() {
     data.append("file", resumeFile);
 
     axios
-      .post(`http://localhost:8080/api/resumes/upload/pdf/${candidateId}`, data, {
+      .post(`${process.env.REACT_APP_API_BASE_URL}/api/resumes/upload/pdf/${candidateId}`, data, {
         headers: { "Content-Type": "multipart/form-data" }
       })
       .then(() => {
@@ -99,7 +99,7 @@ function DashboardPage() {
     if (!candidateId) return;
 
     axios
-      .get(`http://localhost:8080/api/resumes/check/${candidateId}`)
+      .get(`${process.env.REACT_APP_API_BASE_URL}/api/resumes/check/${candidateId}`)
       .then(res => {
         if (res.data === false) {
           setResumeMissingJobs(true);
@@ -137,7 +137,7 @@ function DashboardPage() {
 
     axios
       .post(
-        `http://localhost:8080/api/applications/submit/${candidate?.id}/${applyJobId}`,
+        `${process.env.REACT_APP_API_BASE_URL}/api/applications/submit/${candidate?.id}/${applyJobId}`,
         formData
       )
       .then(() => {

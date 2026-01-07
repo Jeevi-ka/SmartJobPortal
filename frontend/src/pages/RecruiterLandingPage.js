@@ -23,12 +23,12 @@ const RecruiterLandingPage = () => {
       let response;
       if (isRegister) {
         response = await axios.post(
-          "http://localhost:8080/api/recruiters/register",
+          `${process.env.REACT_APP_API_BASE_URL}/api/recruiters/register`,
           formData
         );
       } else {
         response = await axios.post(
-          "http://localhost:8080/api/recruiters/login",
+          `${process.env.REACT_APP_API_BASE_URL}/api/recruiters/login`,
           { email: formData.email, password: formData.password }
         );
       }
