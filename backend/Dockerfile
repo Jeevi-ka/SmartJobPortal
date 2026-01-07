@@ -1,21 +1,33 @@
-# Use an official OpenJDK runtime as parent image
-FROM eclipse-temurin:17-jdk
+# -------- BUILD STAGE --------
+FROM eclipse-temurin:17-jdk AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy pom.xml and download dependencies
+# Copy Maven wrapper and config first (for caching)
+COPY mvnw .
+COPY mvnw.cmd .
+COPY .mvn .mvn
 COPY pom.xml .
+
+# 🔥 FIX: Give execute permission
+RUN chmod +x mvnw
+
+# Download dependencies
 RUN ./mvnw dependency:go-offline
 
-# Copy the rest of the source code
-COPY . .
+# Copy source code
+COPY src src
 
-# Package the application
-RUN ./mvnw package -DskipTests
+# Build the application
+RUN ./mvnw clean package -DskipTests
 
-# Expose port 8080
+# -------- RUNTIME STAGE --------
+FROM eclipse-temurin:17-jre
+
+WORKDIR /app
+
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Run the application
-CMD ["java", "-jar", "target/backend-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java","-jar","app.jar"]
