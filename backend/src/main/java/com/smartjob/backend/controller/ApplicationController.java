@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/applications")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://venerable-churros-55f2fa.netlify.app")
 public class ApplicationController {
 
     @Autowired

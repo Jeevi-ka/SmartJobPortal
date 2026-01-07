@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/resumes")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://venerable-churros-55f2fa.netlify.app")
 public class ResumeController {
 
     @Autowired
